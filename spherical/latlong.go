@@ -20,3 +20,11 @@ func (this *latlong) DistanceInNm(that *latlong) float64 {
 func (this *latlong) CourseInDegrees(that *latlong) float64 {
 	return CourseInDegrees(this.latitude, this.longitude, that.latitude, that.longitude)
 }
+
+func (this *latlong) CrossTrackDistanceNm(start, end *latlong) float64 {
+	return 0.
+}
+
+func (this *latlong) AlongTrackDistanceNm(start, end *latlong, crossTrackDistanceNm float64) float64 {
+	return 0.
+}

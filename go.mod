@@ -1,3 +1,3 @@
-module stellarsunset/commons-go
+module stellarsunset/spherical
 
-go 1.19
+go 1.20
