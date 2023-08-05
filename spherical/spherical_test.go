@@ -9,56 +9,38 @@ func almostEquals(expected, actual, maxError float64) bool {
 	return math.Abs(expected-actual) <= maxError
 }
 
+func withinError(t *testing.T, expected, actual, maxError float64, s string) {
+	if math.Abs(expected-actual) > maxError {
+		t.Errorf("%s: want = %f, got = %f, tol = %f", s, expected, actual, maxError)
+	}
+}
+
 func TestDistanceInNm(t *testing.T) {
 
 	// http://www.movable-type.co.uk/scripts/latlong.html
 	expectedDistanceKm := 1569.
 	kmPerNm := 1.852
-
-	want := expectedDistanceKm / kmPerNm
-	if got := DistanceInNm(0., 0., 10., 10.); !almostEquals(got, want, 1.) {
-		t.Errorf("DistanceInNm(...) = %f, want %f", got, want)
-	}
+	withinError(t, expectedDistanceKm/kmPerNm, DistanceInNm(0., 0., 10., 10.), 1., "DistanceInNm()")
 }
 
 func TestCourseInDegreesDueNorth(t *testing.T) {
-
-	want := 360.
-	if got := CourseInDegrees(0., 0., 10., 0.); !almostEquals(got, want, .01) {
-		t.Errorf("CourseInDegrees(...) = %f, want %f", got, want)
-	}
+	withinError(t, 360., CourseInDegrees(0., 0., 10., 0.), .01, "CourseInDegrees(North)")
 }
 
 func TestCourseInDegreesDueEast(t *testing.T) {
-
-	want := 90.
-	if got := CourseInDegrees(0., 0., 0., 10.); !almostEquals(got, want, .01) {
-		t.Errorf("CourseInDegrees(...) = %f, want %f", got, want)
-	}
+	withinError(t, 90., CourseInDegrees(0., 0., 0., 10.), .01, "CourseInDegrees(East)")
 }
 
 func TestCourseInDegreesDueWest(t *testing.T) {
-
-	want := 270.
-	if got := CourseInDegrees(0., 10., 0., 0.); !almostEquals(got, want, .01) {
-		t.Errorf("CourseInDegrees(...) = %f, want %f", got, want)
-	}
+	withinError(t, 270., CourseInDegrees(0., 10., 0., 0.), .01, "CourseInDegrees(West)")
 }
 
 func TestCourseInDegreesDueSouth(t *testing.T) {
-
-	want := 180.
-	if got := CourseInDegrees(10., 0., 0., 0.); !almostEquals(got, want, .01) {
-		t.Errorf("CourseInDegrees(...) = %f, want %f", got, want)
-	}
+	withinError(t, 180., CourseInDegrees(10., 0., 0., 0.), .01, "CourseInDegrees(South)")
 }
 
 func TestCourseInDegreesNorthEast(t *testing.T) {
-
-	want := 45.
-	if got := CourseInDegrees(0., 0., 1., 1.); !almostEquals(got, want, .01) {
-		t.Errorf("CourseInDegrees(...) = %f, want %f", got, want)
-	}
+	withinError(t, 45., CourseInDegrees(0., 0., 1., 1.), .01, "CourseInDegrees(NorthEast)")
 }
 
 func TestProjectOut(t *testing.T) {
