@@ -22,7 +22,7 @@ func isFalse(t *testing.T, condition bool, s string) {
 	}
 }
 
-func isEqual(t *testing.T, expected, actual crs.Course) {
+func isEqual(t *testing.T, expected, actual any) {
 	if expected != actual {
 		t.Errorf("want = %+v, got = %+v", expected, actual)
 	}
@@ -45,10 +45,10 @@ func TestOf(t *testing.T) {
 	oneDegree, twoRadians := crs.Of(1, crs.Degrees), crs.Of(2, crs.Radians)
 
 	withinError(t, 1., oneDegree.InDegrees(), "InDegrees(OneDegree)")
-	isTrue(t, oneDegree.NativeUnit() == crs.Degrees, "NativeUnit(OneDegree)")
+	isEqual(t, crs.Degrees, oneDegree.NativeUnit())
 
 	withinError(t, 2., twoRadians.InRadians(), "InRadians(TwoRadians)")
-	isTrue(t, twoRadians.NativeUnit() == crs.Radians, "NativeUnit(TwoRadians)")
+	isEqual(t, crs.Radians, twoRadians.NativeUnit())
 }
 
 func TestOfDegrees(t *testing.T) {
@@ -56,7 +56,7 @@ func TestOfDegrees(t *testing.T) {
 	oneDegree := crs.OfDegrees(1)
 
 	withinError(t, 1., oneDegree.InDegrees(), "InDegrees(OneDegree)")
-	isTrue(t, oneDegree.NativeUnit() == crs.Degrees, "NativeUnit(OneDegree)")
+	isEqual(t, crs.Degrees, oneDegree.NativeUnit())
 }
 
 func TestOfRadians(t *testing.T) {
@@ -64,7 +64,7 @@ func TestOfRadians(t *testing.T) {
 	twoRadians := crs.OfRadians(2)
 
 	withinError(t, 2., twoRadians.InRadians(), "InRadians(TwoRadians)")
-	isTrue(t, twoRadians.NativeUnit() == crs.Radians, "NativeUnit(TwoRadians)")
+	isEqual(t, crs.Radians, twoRadians.NativeUnit())
 }
 
 func TestUnitConversions(t *testing.T) {
@@ -140,17 +140,81 @@ func TestIsZero(t *testing.T) {
 }
 
 func TestTimes(t *testing.T) {
-
+	oneDegree, fourDegrees := crs.OfDegrees(1), crs.OfDegrees(4)
+	isEqual(t, *fourDegrees, *oneDegree.Times(4))
 }
 
 func TestPlus(t *testing.T) {
+	oneRadian, ninetyDegrees := crs.OfRadians(1), crs.OfDegrees(90)
 
+	isEqual(t, crs.Radians, oneRadian.Plus(ninetyDegrees).NativeUnit())
+	isEqual(t, crs.Degrees, ninetyDegrees.Plus(oneRadian).NativeUnit())
+
+	isEqual(t, 1.0+math.Pi/2., oneRadian.Plus(ninetyDegrees).InRadians())
+	isEqual(t, 1.0+math.Pi/2., ninetyDegrees.Plus(oneRadian).InRadians())
 }
 
 func TestMinus(t *testing.T) {
+	oneRadian, ninetyDegrees := crs.OfRadians(1), crs.OfDegrees(90)
 
+	isEqual(t, crs.Radians, oneRadian.Minus(ninetyDegrees).NativeUnit())
+	isEqual(t, crs.Degrees, ninetyDegrees.Minus(oneRadian).NativeUnit())
+
+	withinError(t, 1.0-(math.Pi/2.), oneRadian.Minus(ninetyDegrees).InRadians(), "Rad(1) - Deg(90)")
+	withinError(t, (math.Pi/2.)-1., ninetyDegrees.Minus(oneRadian).InRadians(), "Deg(90) - Rad(1)")
 }
 
 func TestComparisonMethods(t *testing.T) {
 
+	zeroRadians, zeroDegrees, oneDegree := crs.OfRadians(0), crs.OfDegrees(0), crs.OfDegrees(1)
+
+	isTrue(t, zeroRadians.IsGreaterThanOrEqualTo(zeroDegrees), "Rad(0) >= Deg(0)")
+	isTrue(t, zeroDegrees.IsGreaterThanOrEqualTo(zeroRadians), "Deg(0) >= Rad(0)")
+	isFalse(t, zeroRadians.IsGreaterThan(zeroDegrees), "Rad(0) > Deg(0)")
+	isFalse(t, zeroDegrees.IsGreaterThan(zeroRadians), "Deg(0) > Rad(0)")
+
+	isTrue(t, zeroRadians.IsLessThanOrEqualTo(zeroDegrees), "Rad(0) <= Deg(0)")
+	isTrue(t, zeroDegrees.IsLessThanOrEqualTo(zeroRadians), "Deg(0) <= Rad(0)")
+	isFalse(t, zeroRadians.IsLessThan(zeroDegrees), "Rad(0) < Deg(0)")
+	isFalse(t, zeroDegrees.IsLessThan(zeroRadians), "Deg(0) < Rad(0)")
+
+	isTrue(t, oneDegree.IsGreaterThanOrEqualTo(zeroDegrees), "Deg(1) >= Deg(0)")
+	isTrue(t, oneDegree.IsGreaterThan(zeroDegrees), "Deg(1) > Deg(0)")
+	isFalse(t, oneDegree.IsLessThanOrEqualTo(zeroDegrees), "Deg(1) <= Deg(0)")
+	isFalse(t, oneDegree.IsLessThan(zeroDegrees), "Deg(1) < Deg(0)")
+}
+
+func TestAngleBetween(t *testing.T) {
+
+	diff := crs.AngleBetween(crs.OfDegrees(5), crs.OfDegrees(355))
+	isEqual(t, *crs.OfDegrees(10), *diff)
+
+	diff = crs.AngleBetween(crs.OfDegrees(355), crs.OfDegrees(5))
+	isEqual(t, *crs.OfDegrees(-10), *diff)
+}
+
+func TestSin(t *testing.T) {
+	withinError(t, -1., crs.OfDegrees(-90).Sin(), "Sin(-90)")
+	withinError(t, -math.Sqrt(2.)/2., crs.OfDegrees(-45).Sin(), "Sin(-45)")
+	withinError(t, 0., crs.OfDegrees(0).Sin(), "Sin(0)")
+	withinError(t, math.Sqrt(2.)/2., crs.OfDegrees(45).Sin(), "Sin(45)")
+	withinError(t, 1., crs.OfDegrees(90).Sin(), "Sin(90)")
+}
+
+func TestCos(t *testing.T) {
+	withinError(t, 0., crs.OfDegrees(-90).Cos(), "Cos(-90)")
+	withinError(t, math.Sqrt(2.)/2, crs.OfDegrees(-45).Cos(), "Cos(-45)")
+	withinError(t, 1., crs.OfDegrees(0).Cos(), "Cos(0)")
+
+	withinError(t, 0., crs.OfDegrees(90).Cos(), "Cos(90)")
+	withinError(t, -math.Sqrt(2.)/2, crs.OfDegrees(135).Cos(), "Cos(135)")
+	withinError(t, -1., crs.OfDegrees(180).Cos(), "Cos(180)")
+}
+
+func TestTan(t *testing.T) {
+	withinError(t, -1., crs.OfDegrees(-45).Tan(), "Tan(-45)")
+	withinError(t, 0., crs.OfDegrees(0).Tan(), "Tan(0)")
+	withinError(t, 1., crs.OfDegrees(45).Tan(), "Tan(45)")
+	isTrue(t, 2e14 < crs.OfDegrees(90.).Tan(), "Tan(90)")
+	withinError(t, -1., crs.OfDegrees(135).Tan(), "Tan(135)")
 }

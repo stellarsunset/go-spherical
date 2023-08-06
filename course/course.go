@@ -105,7 +105,7 @@ func (this *Course) Plus(that *Course) *Course {
 }
 
 func (this *Course) Minus(that *Course) *Course {
-	return Of(this.angle+that.In(this.unit), this.unit)
+	return Of(this.angle-that.In(this.unit), this.unit)
 }
 
 func (this *Course) IsLessThan(that *Course) bool {
