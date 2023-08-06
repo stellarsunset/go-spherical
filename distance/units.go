@@ -27,6 +27,6 @@ func UnitsPerMeter(unit Unit) float64 {
 	return units[unit].perMeter
 }
 
-func Abbreviation(unit Unit) string {
+func Abbr(unit Unit) string {
 	return units[unit].abbr
 }

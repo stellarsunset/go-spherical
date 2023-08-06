@@ -13,3 +13,24 @@ POINTING. This distinction is important when (a) an aircraft is impacted by the 
 a helicopter flies in a direction is it's pointed.
 */
 package course
+
+type Course struct {
+	angle float64
+	unit  Unit
+}
+
+func Of(angle float64, unit Unit) *Course {
+	return &Course{angle, unit}
+}
+
+func OfDegrees(angle float64) *Course {
+	return &Course{angle, Degrees}
+}
+
+func OfRadians(angle float64) *Course {
+	return &Course{angle, Radians}
+}
+
+func (this *Course) NativeUnit() Unit {
+	return this.unit
+}
