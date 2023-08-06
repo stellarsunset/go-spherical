@@ -96,8 +96,8 @@ func ProjectOut(lat, lon, headingDegrees, distanceNm float64) (latitude, longitu
 	return toDegrees(latProj), mod(toDegrees(lonProj)+180., 360.) - 180.
 }
 
-// Computes the spherical cross track distance (in nautical miles) between a great circle defined by the provided start and end
-// point and the provided position.
+// Computes the spherical cross track distance (in nautical miles) between a great circle (GC) defined by the provided start and
+// end point and the provided position.
 //
 // This value will be negative if the position is to the left of the GC and positive if it is to the right.
 //
