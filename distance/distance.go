@@ -1,9 +1,9 @@
 /*
- * This Distance class is intended to make working with Distances less error prone because (1) all
- * Distance objects are immutable and (2) the unit is always required and always accounted for.
- *
- * This class is extremely similar in spirit and design to java.time.Duration and java.time.Instant.
- */
+This Distance package is intended to make working with Distances less error prone because (1) all
+Distance objects are immutable and (2) the unit is always required and always accounted for.
+
+This class is extremely similar in spirit and design to java.time.Duration and java.time.Instant.
+*/
 package distance
 
 import (

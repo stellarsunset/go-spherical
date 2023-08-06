@@ -2,7 +2,7 @@ package distance_test
 
 import (
 	"math"
-	"stellarsunset/spherical/distance"
+	d "stellarsunset/spherical/distance"
 	"testing"
 )
 
@@ -18,7 +18,7 @@ func isFalse(t *testing.T, condition bool, s string) {
 	}
 }
 
-func isEqual(t *testing.T, expected, actual distance.Distance) {
+func isEqual(t *testing.T, expected, actual d.Distance) {
 	if expected != actual {
 		t.Errorf("want = %+v, got = %+v", expected, actual)
 	}
@@ -38,7 +38,7 @@ func withinFractionOfExpected(t *testing.T, expected, actual, percentError float
 
 func TestOf(t *testing.T) {
 
-	tol, d := .00001, distance.Of(1., distance.NauticalMiles)
+	tol, d := .00001, d.Of(1., d.NauticalMiles)
 
 	withinError(t, 1., d.InNauticalMiles(), tol, "InNauticalMiles()")
 	withinFractionOfExpected(t, 1852., d.InMeters(), tol, "InMeters()")
@@ -50,24 +50,24 @@ func TestIn(t *testing.T) {
 
 	tol := .00001
 
-	oneNm := distance.OfNauticalMiles(1.)
-	withinError(t, 1., oneNm.In(distance.NauticalMiles), tol, "In(NauticalMiles)")
-	withinFractionOfExpected(t, 1852., oneNm.In(distance.Meters), tol, "In(Meters)")
-	withinFractionOfExpected(t, 6076.12, oneNm.In(distance.Feet), tol, "In(Feet)")
-	withinFractionOfExpected(t, 1.15078, oneNm.In(distance.Miles), tol, "In(Miles)")
+	oneNm := d.OfNauticalMiles(1.)
+	withinError(t, 1., oneNm.In(d.NauticalMiles), tol, "In(NauticalMiles)")
+	withinFractionOfExpected(t, 1852., oneNm.In(d.Meters), tol, "In(Meters)")
+	withinFractionOfExpected(t, 6076.12, oneNm.In(d.Feet), tol, "In(Feet)")
+	withinFractionOfExpected(t, 1.15078, oneNm.In(d.Miles), tol, "In(Miles)")
 
-	oneMeter := distance.OfMeters(1.)
-	withinFractionOfExpected(t, 0.000539956803456, oneMeter.In(distance.NauticalMiles), tol, "In(NauticalMiles)")
-	withinError(t, 1., oneMeter.In(distance.Meters), tol, "In(Meters)")
-	withinError(t, .001, oneMeter.In(distance.Kilometers), tol, "In(Kilometers)")
-	withinFractionOfExpected(t, 3.28084, oneMeter.In(distance.Feet), tol, "In(Feet)")
-	withinFractionOfExpected(t, .000621371, oneMeter.In(distance.Miles), tol, "In(Miles)")
+	oneMeter := d.OfMeters(1.)
+	withinFractionOfExpected(t, 0.000539956803456, oneMeter.In(d.NauticalMiles), tol, "In(NauticalMiles)")
+	withinError(t, 1., oneMeter.In(d.Meters), tol, "In(Meters)")
+	withinError(t, .001, oneMeter.In(d.Kilometers), tol, "In(Kilometers)")
+	withinFractionOfExpected(t, 3.28084, oneMeter.In(d.Feet), tol, "In(Feet)")
+	withinFractionOfExpected(t, .000621371, oneMeter.In(d.Miles), tol, "In(Miles)")
 }
 
 func TestComparisonMethods(t *testing.T) {
 
-	halfMeter, oneMeter := distance.OfMeters(.5), distance.OfMeters(1.)
-	oneThousandMeters, oneKilometer := distance.OfMeters(1000.), distance.OfKilometers(1.)
+	halfMeter, oneMeter := d.OfMeters(.5), d.OfMeters(1.)
+	oneThousandMeters, oneKilometer := d.OfMeters(1000.), d.OfKilometers(1.)
 
 	isTrue(t, halfMeter.IsLessThan(oneMeter), ".5M < 1M")
 	isTrue(t, halfMeter.IsLessThanOrEqualTo(oneMeter), ".5M <= 1M")
@@ -80,20 +80,20 @@ func TestComparisonMethods(t *testing.T) {
 
 func TestMiles(t *testing.T) {
 
-	tol, oneMile := .00001, distance.OfMiles(1.)
+	tol, oneMile := .00001, d.OfMiles(1.)
 	withinError(t, 1., oneMile.InMiles(), tol, "OneMile.inMiles()")
 	withinFractionOfExpected(t, 5280., oneMile.InFeet(), tol, "OneMile.inFeet()")
 }
 
 func TestNegate(t *testing.T) {
 
-	oneMeter, negativeMeter := distance.OfMeters(1.), distance.OfMeters(-1.)
+	oneMeter, negativeMeter := d.OfMeters(1.), d.OfMeters(-1.)
 	isTrue(t, *negativeMeter == *oneMeter.Negate(), "Abs(-1M) == 1M")
 }
 
 func TestIsPositive(t *testing.T) {
 
-	negativeOne, zero, one := distance.OfFeet(-1), distance.OfFeet(0.), distance.OfFeet(1)
+	negativeOne, zero, one := d.OfFeet(-1), d.OfFeet(0.), d.OfFeet(1)
 
 	isFalse(t, negativeOne.IsPositive(), "IsPositive(-1)")
 	isTrue(t, negativeOne.Negate().IsPositive(), "IsPositive(Negate(-1))")
@@ -107,7 +107,7 @@ func TestIsPositive(t *testing.T) {
 
 func TestIsNegative(t *testing.T) {
 
-	negativeOne, zero, one := distance.OfFeet(-1), distance.OfFeet(0.), distance.OfFeet(1)
+	negativeOne, zero, one := d.OfFeet(-1), d.OfFeet(0.), d.OfFeet(1)
 
 	isTrue(t, negativeOne.IsNegative(), "IsNegative(-1)")
 	isFalse(t, negativeOne.Negate().IsNegative(), "IsNegative(Negate(-1))")
@@ -121,7 +121,7 @@ func TestIsNegative(t *testing.T) {
 
 func TestIsZero(t *testing.T) {
 
-	negativeOne, zero, one := distance.OfFeet(-1), distance.OfFeet(0.), distance.OfFeet(1)
+	negativeOne, zero, one := d.OfFeet(-1), d.OfFeet(0.), d.OfFeet(1)
 
 	isFalse(t, negativeOne.IsZero(), "IsZero(-1)")
 	isFalse(t, negativeOne.Negate().IsZero(), "IsZero(Negate(-1))")
@@ -135,21 +135,21 @@ func TestIsZero(t *testing.T) {
 
 func TestAbs(t *testing.T) {
 
-	oneMeter, negativeMeter := distance.OfMeters(1.), distance.OfMeters(-1.)
+	oneMeter, negativeMeter := d.OfMeters(1.), d.OfMeters(-1.)
 
 	isTrue(t, *negativeMeter.Abs() == *oneMeter, "Abs(-1M) == 1M")
-	isTrue(t, *oneMeter.Abs() == *distance.OfMeters(1.), "Abs(1M) == 1M")
+	isTrue(t, *oneMeter.Abs() == *d.OfMeters(1.), "Abs(1M) == 1M")
 }
 
 func TestTimes(t *testing.T) {
 
-	tol, oneMeter, halfMeter := .00001, distance.OfMeters(1.), distance.OfMeters(.5)
+	tol, oneMeter, halfMeter := .00001, d.OfMeters(1.), d.OfMeters(.5)
 	withinError(t, halfMeter.InMeters(), oneMeter.Times(.5).InMeters(), tol, "1M * .5")
 }
 
 func TestPlus(t *testing.T) {
 
-	tol, oneFoot, fiveHalvesFeet := .00001, distance.OfFeet(1.), distance.OfFeet(2.5)
+	tol, oneFoot, fiveHalvesFeet := .00001, d.OfFeet(1.), d.OfFeet(2.5)
 
 	sum := oneFoot.Plus(fiveHalvesFeet)
 	withinError(t, 3.5, sum.InFeet(), tol, "1Ft + 2.5Ft")
@@ -157,7 +157,7 @@ func TestPlus(t *testing.T) {
 
 func TestMinus(t *testing.T) {
 
-	tol, oneFoot, fiveHalvesFeet := .00001, distance.OfFeet(1.), distance.OfFeet(2.5)
+	tol, oneFoot, fiveHalvesFeet := .00001, d.OfFeet(1.), d.OfFeet(2.5)
 
 	sum := oneFoot.Minus(fiveHalvesFeet)
 
@@ -167,10 +167,10 @@ func TestMinus(t *testing.T) {
 
 func TestSort(t *testing.T) {
 
-	oneMeter, zero, negativeOneFeet, oneFoot := distance.OfMeters(1), distance.Zero(), distance.OfFeet(-1), distance.OfFeet(1)
-	oneNm, fourFeet, oneKm, fiveFeet := distance.OfNauticalMiles(1), distance.OfFeet(4), distance.OfKilometers(1), distance.OfFeet(5)
+	oneMeter, zero, negativeOneFeet, oneFoot := d.OfMeters(1), d.Zero(), d.OfFeet(-1), d.OfFeet(1)
+	oneNm, fourFeet, oneKm, fiveFeet := d.OfNauticalMiles(1), d.OfFeet(4), d.OfKilometers(1), d.OfFeet(5)
 
-	ds := []distance.Distance{
+	ds := []d.Distance{
 		*oneMeter,
 		*zero,
 		*negativeOneFeet,
@@ -181,7 +181,7 @@ func TestSort(t *testing.T) {
 		*fiveFeet,
 	}
 
-	distance.Sort(ds)
+	d.Sort(ds)
 
 	isEqual(t, *negativeOneFeet, ds[0])
 	isEqual(t, *zero, ds[1])
@@ -195,62 +195,62 @@ func TestSort(t *testing.T) {
 
 func TestSum(t *testing.T) {
 
-	isEqual(t, *distance.Zero(), *distance.Sum(nil))
+	isEqual(t, *d.Zero(), *d.Sum(nil))
 
-	empty := []distance.Distance{}
-	isEqual(t, *distance.Zero(), *distance.Sum(empty))
+	empty := []d.Distance{}
+	isEqual(t, *d.Zero(), *d.Sum(empty))
 
-	one := []distance.Distance{*distance.OfFeet(1)}
-	isEqual(t, *distance.OfFeet(1), *distance.Sum(one))
+	one := []d.Distance{*d.OfFeet(1)}
+	isEqual(t, *d.OfFeet(1), *d.Sum(one))
 
-	sameUnits := []distance.Distance{
-		*distance.OfFeet(12),
-		*distance.OfFeet(22),
+	sameUnits := []d.Distance{
+		*d.OfFeet(12),
+		*d.OfFeet(22),
 	}
-	isEqual(t, *distance.OfFeet(34), *distance.Sum(sameUnits))
+	isEqual(t, *d.OfFeet(34), *d.Sum(sameUnits))
 
-	differentUnits := []distance.Distance{
-		*distance.OfFeet(12),
-		*distance.OfFeet(22),
-		*distance.OfMeters(1),
+	differentUnits := []d.Distance{
+		*d.OfFeet(12),
+		*d.OfFeet(22),
+		*d.OfMeters(1),
 	}
-	withinError(t, 37.28084, distance.Sum(differentUnits).InFeet(), .00001, "Different Units Sum")
+	withinError(t, 37.28084, d.Sum(differentUnits).InFeet(), .00001, "Different Units Sum")
 }
 
 func TestMinOf(t *testing.T) {
 
-	one := []distance.Distance{*distance.OfFeet(1)}
-	isEqual(t, *distance.OfFeet(1), *distance.MinOf(one))
+	one := []d.Distance{*d.OfFeet(1)}
+	isEqual(t, *d.OfFeet(1), *d.MinOf(one))
 
-	sameUnits := []distance.Distance{
-		*distance.OfFeet(12),
-		*distance.OfFeet(22),
+	sameUnits := []d.Distance{
+		*d.OfFeet(12),
+		*d.OfFeet(22),
 	}
-	isEqual(t, *distance.OfFeet(12), *distance.MinOf(sameUnits))
+	isEqual(t, *d.OfFeet(12), *d.MinOf(sameUnits))
 
-	differentUnits := []distance.Distance{
-		*distance.OfFeet(12),
-		*distance.OfFeet(22),
-		*distance.OfMeters(1),
+	differentUnits := []d.Distance{
+		*d.OfFeet(12),
+		*d.OfFeet(22),
+		*d.OfMeters(1),
 	}
-	isEqual(t, *distance.OfMeters(1), *distance.MinOf(differentUnits))
+	isEqual(t, *d.OfMeters(1), *d.MinOf(differentUnits))
 }
 
 func TestMaxOf(t *testing.T) {
 
-	one := []distance.Distance{*distance.OfFeet(1)}
-	isEqual(t, *distance.OfFeet(1), *distance.MaxOf(one))
+	one := []d.Distance{*d.OfFeet(1)}
+	isEqual(t, *d.OfFeet(1), *d.MaxOf(one))
 
-	sameUnits := []distance.Distance{
-		*distance.OfFeet(12),
-		*distance.OfFeet(22),
+	sameUnits := []d.Distance{
+		*d.OfFeet(12),
+		*d.OfFeet(22),
 	}
-	isEqual(t, *distance.OfFeet(22), *distance.MaxOf(sameUnits))
+	isEqual(t, *d.OfFeet(22), *d.MaxOf(sameUnits))
 
-	differentUnits := []distance.Distance{
-		*distance.OfFeet(12),
-		*distance.OfFeet(22),
-		*distance.OfMeters(1),
+	differentUnits := []d.Distance{
+		*d.OfFeet(12),
+		*d.OfFeet(22),
+		*d.OfMeters(1),
 	}
-	isEqual(t, *distance.OfFeet(22), *distance.MaxOf(differentUnits))
+	isEqual(t, *d.OfFeet(22), *d.MaxOf(differentUnits))
 }
