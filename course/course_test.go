@@ -193,6 +193,20 @@ func TestAngleBetween(t *testing.T) {
 	isEqual(t, *crs.OfDegrees(-10), *diff)
 }
 
+func TestAngleDifference(t *testing.T) {
+
+	// positive
+	isEqual(t, 5., crs.AngleDifference(5., 0.))
+	isEqual(t, 175., crs.AngleDifference(175., 0))
+	isEqual(t, -175., crs.AngleDifference(185., 0))
+	isEqual(t, -5., crs.AngleDifference(355., 0.))
+
+	// negative
+	isEqual(t, -5., crs.AngleDifference(-5., 0))
+	isEqual(t, -175., crs.AngleDifference(-175., 0))
+	isEqual(t, 175., crs.AngleDifference(-185., 0))
+}
+
 func TestSin(t *testing.T) {
 	withinError(t, -1., crs.OfDegrees(-90).Sin(), "Sin(-90)")
 	withinError(t, -math.Sqrt(2.)/2., crs.OfDegrees(-45).Sin(), "Sin(-45)")

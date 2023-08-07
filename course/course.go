@@ -16,7 +16,6 @@ package course
 
 import (
 	"math"
-	"stellarsunset/spherical/spherical"
 )
 
 type Course struct {
@@ -53,7 +52,24 @@ func OfRadians(angle float64) *Course {
 }
 
 func AngleBetween(one, two *Course) *Course {
-	return OfDegrees(spherical.AngleDifference(one.InDegrees(), two.InDegrees()))
+	return OfDegrees(AngleDifference(one.InDegrees(), two.InDegrees()))
+}
+
+// Returns the difference between two angles (in degrees), clockwise movement is considered positive.
+// AngleDifference(Deg(355), Deg(5)) = Deg(-10)
+// AngleDifference(Deg(5), Deg(355)) = Deg(10)
+func AngleDifference(courseInDegrees, courseInDegrees0 float64) float64 {
+	return angleDifference(courseInDegrees - courseInDegrees0)
+}
+
+func angleDifference(dz float64) float64 {
+	if dz > 180. {
+		return dz - 360.
+	} else if dz < -180. {
+		return dz + 360.
+	} else {
+		return dz
+	}
 }
 
 func (this *Course) NativeUnit() Unit {

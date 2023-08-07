@@ -5,6 +5,9 @@
 // for many applications and is far less computationally intensive.
 //
 // Note: all methods in this class referenceing latitude/longitude are implicitly expecting them in degrees
+//
+// This package is left independent of the other utility packages provided in this repo to allow it to be copied out
+// and or referenced independently if desired.
 package spherical
 
 import (
@@ -65,7 +68,7 @@ func ProjectOut(lat, lon, headingDegrees, distanceNm float64) (latitude, longitu
 	latRad, lonRad := toRadians(lat), toRadians(lon)
 
 	course, dist := headingDegrees, math.Abs(distanceNm)/EarthRadiusNm
-	if headingDegrees < 0. {
+	if distanceNm < 0. {
 		course = mod(headingDegrees+180., 360.)
 	}
 	course = toRadians(course)
@@ -111,10 +114,6 @@ func CrossTrackDistanceNm(startLat, startLon, endLat, endLon, posLat, posLon flo
 	return distanceInNm(math.Asin(math.Sin(distance) * math.Sin(angle)))
 }
 
-func AngleDifference(headingDegrees, headingDegrees0 float64) float64 {
-	return angleDifference(headingDegrees - headingDegrees0)
-}
-
 // Computes the distance along the track (in nautical miles) from start point to end point and the provided position using the
 // provided cross track distance instead of recomputing it internally.
 //
@@ -125,7 +124,7 @@ func AngleDifference(headingDegrees, headingDegrees0 float64) float64 {
 // return NaN.
 func AlongTrackDistanceNm(startLat, startLon, endLat, endLon, posLat, posLon, crossTrackDistanceNm float64) float64 {
 
-	relativeAngle := AngleDifference(CourseInDegrees(startLat, startLon, endLat, endLon), CourseInDegrees(startLat, startLon, posLat, posLon))
+	relativeAngle := angleDifference(CourseInDegrees(startLat, startLon, endLat, endLon), CourseInDegrees(startLat, startLon, posLat, posLon))
 
 	var sign float64
 	if math.Abs(relativeAngle) > 90. {
@@ -192,7 +191,12 @@ func distanceInNm(radians float64) float64 {
 	return ((180. * 60.) / math.Pi) * radians
 }
 
-func angleDifference(dz float64) float64 {
+// Replicated from course.go so the import isn't required for this class
+func angleDifference(headingDegrees, headingDegrees0 float64) float64 {
+	return modAngleDifference(headingDegrees - headingDegrees0)
+}
+
+func modAngleDifference(dz float64) float64 {
 	if dz > 180. {
 		return dz - 360.
 	} else if dz < -180. {
